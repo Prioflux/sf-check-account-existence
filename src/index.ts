@@ -1,7 +1,6 @@
 import xior from "xior";
 import dotenv from "dotenv";
 import fs from "fs";
-import path from "path";
 dotenv.config();
 
 // =======================================
@@ -149,7 +148,7 @@ async function main() {
             {
               params: {
                 page: accountPage,
-                per_page: 200, // Fetch maximum allowed per page
+                per_page: perPage,
               },
             }
           );

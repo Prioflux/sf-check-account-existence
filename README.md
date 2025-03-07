@@ -1,20 +1,20 @@
-# Silverfin Bulk PDF Export
+# Silverfin Account Checker
 
-This utility script allows you to generate and download PDF exports in bulk from your Silverfin firm. It retrieves all companies and generates a specified PDF export for the most recent and previous fiscal year end periods.
+This utility script allows you to check for the existence of a specific account number across all companies in your Silverfin firm. It retrieves all companies, checks if they have the specified account number, and generates a CSV report with the results.
 
 ## Features
 
 - Retrieves all companies from Silverfin with pagination
 - Processes companies in batches to avoid overwhelming the API
-- Checks if a company has a specific account
-- Generates the list of companies with a column that indicates if they have the account or not in a CSV file
+- Checks for the existence of a specific account number across all companies
+- Handles account pagination to ensure thorough checking
+- Generates a CSV report with the results in Dutch
 
 ## Prerequisites
 
 - Node.js
 - pnpm
 - Access to Silverfin API with proper permissions
-- Export Style ID from Silverfin
 
 ## Setup
 
@@ -36,27 +36,35 @@ SF_AUTHORIZATION_CODE=your_authorazation_code_from_the_url
 SILVERFIN_TOKEN=your_access_token_generated_from_the_endpoint
 ```
 
-4. Run the script:
+4. Modify the `accountNumberToCheck` variable in the script to target the specific account you're interested in:
+
+```typescript
+const accountNumberToCheck = "699999"; // Replace with the account number you want to check
+```
+
+5. Run the script:
 
 ```bash
-npx ts-node src/index.ts
+npx tsx src/index.ts
 ```
 
 ## How It Works
 
 1. The script fetches all companies using pagination
-2. Companies are processed in batches to control concurrency
-3. For each company, it finds:
-   - The accounts of the company and checks if a specific account is present
-4. It generates a CSV file with the list of companies and a column that indicates if they have the account or not
+2. Companies are processed in batches of 20 to control concurrency
+3. For each company, it checks all pages of accounts to see if the specified account number exists
+4. It generates a CSV file with the following columns (in Dutch):
+   - Dossiernaam (Company Name)
+   - Dossiernummer (File Code)
+   - Rekening aanwezig? (Account Present? - "Ja" or "Nee")
 
 ## Output
 
-The script creates a CSV file with the list of companies and a column that indicates if they have the account or not
-
+The script creates a CSV file named `company_accounts_check_YYYY-MM-DD.csv` in the project root directory, containing the results of the account check for all companies.
 
 ## Troubleshooting
 
-If the CSV file isn't generating:
-- Check if your export template ID is correct
-- Verify your API token has the necessary permissions
+If the script isn't working as expected:
+- Check if your API token has the necessary permissions
+- Verify that the account number you're looking for is formatted correctly
+- Increase batch size or decrease it if you're experiencing rate limits
